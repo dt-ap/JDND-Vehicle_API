@@ -1,5 +1,6 @@
 package com.udacity.vehicles.domain.car;
 
+import com.udacity.vehicles.client.prices.Price;
 import com.udacity.vehicles.domain.Condition;
 import com.udacity.vehicles.domain.Location;
 import org.springframework.data.annotation.CreatedDate;
@@ -41,12 +42,12 @@ public class Car {
   private Location location = new Location(0d, 0d);
 
   @Transient
-  private String price;
+  private Price price = new Price();
 
   public Car() {
   }
 
-  public Car(Long id, @NotNull Condition condition, @Valid Details details, @Valid Location location, String price) {
+  public Car(Long id, @NotNull Condition condition, @Valid Details details, @Valid Location location, Price price) {
     this.id = id;
     this.condition = condition;
     this.details = details;
@@ -102,11 +103,11 @@ public class Car {
     this.location = location;
   }
 
-  public String getPrice() {
+  public Price getPrice() {
     return price;
   }
 
-  public void setPrice(String price) {
+  public void setPrice(@Valid Price price) {
     this.price = price;
   }
 }

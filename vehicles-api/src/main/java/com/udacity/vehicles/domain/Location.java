@@ -1,8 +1,11 @@
 package com.udacity.vehicles.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 /**
  * Stores information about a given location.
@@ -45,6 +48,11 @@ public class Location {
     this.city = city;
     this.state = state;
     this.zip = zip;
+  }
+
+  @JsonIgnore
+  public boolean isPresent() {
+    return lat != null && lon != null;
   }
 
   public Double getLat() {

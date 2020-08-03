@@ -1,7 +1,5 @@
-package com.udacity.vehicles.api;
+package com.udacity.pricing.api;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +8,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-/**
- * Implements the Error controller related to any errors handled by the Vehicles API
- */
+import java.util.List;
+import java.util.stream.Collectors;
+
 @ControllerAdvice
 public class ErrorController extends ResponseEntityExceptionHandler {
 

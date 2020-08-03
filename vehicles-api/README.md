@@ -17,9 +17,7 @@ view of vehicle details including price and address.
 
 #### TODOs
 
-- Implement the `TODOs` within the `CarService.java` and `CarController.java`  files
 - Add additional tests to the `CarControllerTest.java` file based on the `TODOs`
-- Implement API documentation using Swagger
 
 #### Run the Code
 
@@ -62,6 +60,10 @@ Swagger UI: http://localhost:8080/swagger-ui/index.html
       "productionYear":2018,
       "externalColor":"white"
    },
+   "price": {
+      "currency": "USD",
+      "value": 32500
+   },
    "location":{
       "lat":40.73061,
       "lon":-73.935242
@@ -98,6 +100,10 @@ the Vehicle information to be presented
       "modelYear":2018,
       "productionYear":2018,
       "externalColor":"white"
+   },
+   "price": {
+      "currency": "USD",
+      "value": 31500
    },
    "location":{
       "lat":40.73061,

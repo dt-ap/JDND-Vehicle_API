@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface PriceRepository extends CrudRepository<Price, Long> {
-  Optional<Price> findOneByVehicleId(Long vehicleId);
+  Optional<Price> findByVehicleId(Long vehicleId);
 }

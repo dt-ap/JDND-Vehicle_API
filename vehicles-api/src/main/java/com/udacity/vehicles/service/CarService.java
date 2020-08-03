@@ -31,7 +31,7 @@ public class CarService {
    *
    * @return a list of all vehicles in the CarRepository
    */
-  public List<Car> list() {
+  public List<Car> readAll() {
     return repository.findAll();
   }
 
@@ -41,11 +41,11 @@ public class CarService {
    * @param id the ID number of the car to gather information on
    * @return the requested car's information, including location and price
    */
-  public Car findById(Long id) throws CarNotFoundException {
+  public Car read(Long id) throws CarNotFoundException {
     return repository.findById(id).map(
         car -> {
-          var price = priceClient.getPrice(car.getId());
-          var location = mapsClient.getAddress(car.getLocation());
+          var price = priceClient.get(id);
+          var location = mapsClient.get(car.getLocation());
           car.setPrice(price);
           car.setLocation(location);
           return car;
@@ -54,22 +54,53 @@ public class CarService {
   }
 
   /**
-   * Either creates or updates a vehicle, based on prior existence of car
+   * Creates a vehicle
    *
    * @param car A car object, which can be either new or existing
-   * @return the new/updated car is stored in the repository
+   * @return the new car is stored in the repository
    */
-  public Car save(Car car) throws CarNotFoundException {
-    if (car.getId() != null) {
-      return repository.findById(car.getId())
-          .map(carToBeUpdated -> {
-            carToBeUpdated.setDetails(car.getDetails());
-            carToBeUpdated.setLocation(car.getLocation());
-            return repository.save(carToBeUpdated);
-          }).orElseThrow(CarNotFoundException::new);
+  public Car create(Car car) throws CarFoundException {
+    var id = car.getId();
+    var price = car.getPrice();
+    var location = car.getLocation();
+
+    if (id != null && repository.existsById(id)) {
+      throw new CarFoundException("Vehicle with id '" + id + "' already exists");
+    }
+    var saved = repository.save(car);
+    if (price.isPresent()) {
+      price.setVehicleId(saved.getId());
+      saved.setPrice(priceClient.post(price));
+    }
+    if (location.isPresent()) {
+      saved.setLocation(mapsClient.get(location));
     }
 
-    return repository.save(car);
+    return saved;
+  }
+
+  public Car update(Car updatedCar) throws CarNotFoundException {
+    var updatedId = updatedCar.getId();
+    if (updatedId != null) {
+      return repository.findById(updatedId).map(
+          car -> {
+            var updatedPrice = updatedCar.getPrice();
+            var updatedLocation = updatedCar.getLocation();
+
+            if (updatedPrice.isPresent()) {
+              updatedPrice.setVehicleId(updatedId);
+              car.setPrice(priceClient.post(updatedPrice));
+            }
+            if (updatedLocation.isPresent()) {
+              car.setLocation(mapsClient.get(updatedLocation));
+            }
+
+            car.setDetails(updatedCar.getDetails());
+            return repository.save(car);
+          }).orElseThrow(() -> new CarNotFoundException("Vehicle with id '" + updatedId + "'"));
+    } else {
+      throw new CarNotFoundException("Please use existing ID");
+    }
   }
 
   /**
@@ -79,9 +110,10 @@ public class CarService {
    */
   public void delete(Long id) throws CarNotFoundException {
     if (repository.existsById(id)) {
+      priceClient.delete(id);
       repository.deleteById(id);
     } else {
-      throw new CarNotFoundException();
+      throw new CarNotFoundException("Car with id '" + id + "' does not exists.");
     }
   }
 }

@@ -20,7 +20,19 @@ public class PriceService {
    * @return price of the requested vehicle
    * @throws PriceException vehicleID was not found
    */
-  public Price getPrice(Long vehicleId) throws PriceException {
-    return repository.findOneByVehicleId(vehicleId).orElseThrow(() -> new PriceException("Vehicle with id: " + vehicleId + "not found"));
+  public Price read(Long vehicleId) throws PriceException {
+    return repository.findByVehicleId(vehicleId).orElseThrow(() -> new PriceException("Vehicle with id: '" + vehicleId + "' not found"));
+  }
+
+  public Price createOrUpdate(Price price) {
+    return repository.save(price);
+  }
+
+  public void delete(Long vehicleId) throws PriceException {
+    try {
+      repository.deleteById(vehicleId);
+    } catch (Exception ex) {
+      throw new PriceException("Vehicle with id: '" + vehicleId + "' does not exists");
+    }
   }
 }

@@ -1,9 +1,6 @@
 package com.udacity.pricing.domain.price;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
@@ -11,25 +8,29 @@ import java.math.BigDecimal;
  * Represents the price of a given vehicle, including currency.
  */
 @Entity
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"vehicleId", "currency"})
+})
 public class Price {
 
   @Id
   private Long vehicleId;
 
-  @Enumerated(EnumType.STRING)
   @NotNull
+  @Column(length = 3)
+  @Enumerated(EnumType.STRING)
   private Currency currency;
 
   @NotNull
-  private BigDecimal price;
+  private BigDecimal value;
 
   public Price() {
   }
 
-  public Price(@NotNull Long vehicleId, @NotNull Currency currency, @NotNull BigDecimal price) {
+  public Price(Long vehicleId, @NotNull Currency currency, @NotNull BigDecimal value) {
     this.vehicleId = vehicleId;
     this.currency = currency;
-    this.price = price;
+    this.value = value;
   }
 
   public Long getVehicleId() {
@@ -48,12 +49,12 @@ public class Price {
     this.currency = currency;
   }
 
-  public BigDecimal getPrice() {
-    return price;
+  public BigDecimal getValue() {
+    return value;
   }
 
-  public void setPrice(BigDecimal price) {
-    this.price = price;
+  public void setValue(BigDecimal value) {
+    this.value = value;
   }
 
 }

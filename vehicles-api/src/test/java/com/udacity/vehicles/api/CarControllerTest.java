@@ -9,9 +9,9 @@ import com.udacity.vehicles.domain.car.Details;
 import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import com.udacity.vehicles.service.CarNotFoundException;
 import com.udacity.vehicles.service.CarService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,7 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.net.URI;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Implements testing of the CarController class.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
@@ -60,14 +60,14 @@ public class CarControllerTest {
   /**
    * Creates pre-requisites for testing, such as an example car.
    */
-  @Before
+  @BeforeEach
   public void setup() {
     Car car = getCar();
     car.setId(1L);
-    given(carService.save(any())).willReturn(car);
-    given(carService.findById(eq(car.getId()))).willReturn(car);
-    given(carService.findById(not(eq(car.getId())))).willThrow(CarNotFoundException.class);
-    given(carService.list()).willReturn(Collections.singletonList(car));
+    given(carService.create(any())).willReturn(car);
+    given(carService.read(eq(car.getId()))).willReturn(car);
+    given(carService.read(not(eq(car.getId())))).willThrow(CarNotFoundException.class);
+    given(carService.readAll()).willReturn(Collections.singletonList(car));
     willThrow(CarNotFoundException.class).given(carService).delete(not(eq(car.getId())));
   }
 
