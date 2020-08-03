@@ -96,6 +96,7 @@ public class CarService {
             }
 
             car.setDetails(updatedCar.getDetails());
+            car.setCondition(updatedCar.getCondition());
             return repository.save(car);
           }).orElseThrow(() -> new CarNotFoundException("Vehicle with id '" + updatedId + "'"));
     } else {

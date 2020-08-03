@@ -26,11 +26,11 @@ import java.net.URI;
 import java.util.Collections;
 
 import static org.mockito.AdditionalMatchers.not;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -122,6 +122,31 @@ public class CarControllerTest {
   }
 
   /**
+   * Tests the updates of a single car by ID.
+   *
+   * @throws Exception if the update operation fails
+   */
+  @Test
+  public void updateCar() throws Exception {
+    var car = getCar();
+    car.setId(1L);
+    car.getDetails().setModel("Impala II");
+    car.setCondition(Condition.NEW);
+    given(carService.update(argThat(c -> c.getId().equals(car.getId())))).willReturn(car);
+
+    mvc.perform(
+        put(new URI("/cars/" + car.getId()))
+            .content(json.write(car).getJson())
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.details.model").value(car.getDetails().getModel()))
+        .andExpect(jsonPath("$.condition").value(Condition.NEW.toString()));
+
+
+  }
+
+  /**
    * Tests not found read operation for a single car using false ID.
    *
    * @throws Exception if the read operation for a single car fails
@@ -129,6 +154,25 @@ public class CarControllerTest {
   @Test
   public void findCarNotFound() throws Exception {
     mvc.perform(get(new URI("/cars/" + 2L)).accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+  }
+
+  /**
+   * Tests the updates of a single car using false ID.
+   *
+   * @throws Exception if the update operation fails
+   */
+  @Test
+  public void updateCarNotFound() throws Exception {
+    var car = getCar();
+    car.setId(1L);
+    car.setCondition(Condition.USED);
+
+    given(carService.update(argThat(c -> !c.getId().equals(car.getId())))).willThrow(CarNotFoundException.class);
+
+    mvc.perform(put(new URI("/cars/" + 2L))
+        .content(json.write(car).getJson())
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
   }
 
   /**
